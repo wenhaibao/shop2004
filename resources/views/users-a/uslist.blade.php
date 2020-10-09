@@ -10,7 +10,7 @@
             <td>{{$v->uid}}</td>
             <td>{{$v->user_name}}</td>
             <td>{{$v->email}}</td>
-            <td><a href="#">修改</a></td>
+            <td><a href="{{url('usupdate?uid='.$v->uid)}}">修改</a>|<a href="{{url('usdelete?uid='.$v->uid)}}">删除</a></td>
         </tr>
     @endforeach
 </table>

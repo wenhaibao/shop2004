@@ -3,27 +3,65 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\UsersModel;
+use Illuminate\Support\Facades\Redis;
 
 class UsersController extends Controller
 {
-    /**添加视图 */
-    public function uscreate(){
-        return view('users.uscreate');
+    /**
+     * 注册视图
+     */
+    public function regist(){
+        return view('users.regist');
     }
-    /**添加执行 */
-    public function uscreatedo(){
+    /**
+     * 注册执行
+     */
+    public function registdo(){
         $data = request()->all();
-        $reg_time = time();
-        $data['reg_time'] = $reg_time;
+        $UsersModel = new UsersModel();
         $data['password'] = md5($data['password']);
-        $res = DB::table('users')->insert($data);
+        $res = $UsersModel->insert($data);
         if($res){
-            return redirect('uslist')->with('添加成功');
+            return redirect('login');
         }
     }
-    public function uslist(){
-        $userinfo = DB::table('users')->get();
-        return view('users.uslist',['userinfo'=>$userinfo]);
+    /**
+     * 登录视图
+     */
+    public function login(){
+        return view('users.login');
+    }
+    /**
+     * 登录执行
+     */
+    public function logindo(){
+        $account = request()->account;
+        $password = request()->password;
+        // $where = [];
+        // if(substr_count($account,'@')){
+        //     $where[] =  ['email','=',$account];
+        // }else{
+        //     $where[] =  ['user_name','=',$account];
+        // }
+        $res = UsersModel::where(['tel'=>$account])
+        ->orwhere(['user_name'=>$account])
+        ->orwhere(['email'=>$account])
+        ->orwhere(['tel'=>$account])
+        ->first();
+        if($res['password']!=md5($password)){
+            return redirect('login');
+        }else{
+            return redirect('index');
+        }
+    }
+    /**
+     * 登录后首页
+     */
+    public function index(){
+        $num  = Redis::incr('name1');
+        echo $num;exit;
+        $userinfo = UsersModel::get();
+        return view('users.index',['userinfo'=>$userinfo]);
     }
 }
