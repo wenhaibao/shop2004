@@ -38,29 +38,35 @@ class UsersController extends Controller
     public function logindo(){
         $account = request()->account;
         $password = request()->password;
-        // $where = [];
-        // if(substr_count($account,'@')){
-        //     $where[] =  ['email','=',$account];
-        // }else{
-        //     $where[] =  ['user_name','=',$account];
-        // }
-        $res = UsersModel::where(['tel'=>$account])
+        // 查询是否有错误次数
+        $key = 'login:conut:'.$account;
+        $count = Redis::get($key);
+        if($count>=5){
+            echo '错误次数超过5次';die;
+        }
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $u = UsersModel::where(['tel'=>$account])
         ->orwhere(['user_name'=>$account])
         ->orwhere(['email'=>$account])
-        ->orwhere(['tel'=>$account])
         ->first();
-        if($res['password']!=md5($password)){
+            if(empty($u)){
+                return redirect('login');
+            }
+        if($u['password']!=md5($password)){
+            // 错误次数
+            $count = Redis::incr($key);
+            echo '密码错误次数：'.$count;die;
             return redirect('login');
         }else{
+            UsersModel::where('uid',$u['uid'])->update(['last_ip'=>$ip]);
             return redirect('index');
         }
+        
     }
     /**
      * 登录后首页
      */
     public function index(){
-        $num  = Redis::incr('name1');
-        echo $num;exit;
         $userinfo = UsersModel::get();
         return view('users.index',['userinfo'=>$userinfo]);
     }
