@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UsersCreateRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'user_name' => 'required|min:2|max:12',
+            'password' => 'required|min:3|max:16',
+            'email' => 'required|min:5|max:35|email',
+            'tel' => 'required|min:5|max:35|email',
+        ];
+    }
+}

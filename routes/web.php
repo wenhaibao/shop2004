@@ -63,4 +63,5 @@ Route::get('/regist','UsersController@regist');
 Route::post('/registdo','UsersController@registdo');
 Route::get('/login','UsersController@login');
 Route::post('/logindo','UsersController@logindo');
-Route::get('/index','UsersController@index');
+Route::get('/index','UsersController@index')->middleware('checkuser');
+Route::get('/quit','UsersController@quit');

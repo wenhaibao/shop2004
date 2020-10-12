@@ -1,3 +1,4 @@
+<a href="quit">退出</a>
 <table border="1">
     <tr>
         <td>id</td>
